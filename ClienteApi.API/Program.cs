@@ -1,25 +1,44 @@
+using ClienteApi.API.Extensions;
+using ClienteApi.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// 1. Adiciona as configurações de Injeção de Dependência
+builder.Services
+    .AddDatabaseConfiguration(builder.Configuration)
+    .AddApplicationServices(builder.Configuration)
+    .AddApiConfiguration()
+    .AddSwaggerConfiguration();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+// 2. Constrói a aplicação
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 3. Configura o pipeline de middlewares HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cliente API v1");
+        c.RoutePrefix = string.Empty;
+    });
+
+    // Seed de dados apenas em ambiente de desenvolvimento com InMemory
+    var databaseProvider = builder.Configuration["DatabaseProvider"] ?? "InMemory";
+    if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            DatabaseSeeder.SeedData(context);
+        }
+    }
 }
 
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
+// 4. Executa a aplicação
 app.Run();
