@@ -3,10 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClienteApi.Infrastructure.Data
 {
-    /// <summary>
-    /// Context principal do Entity Framework Core
-    /// Responsável por gerenciar as entidades e configurações do banco de dados
-    /// </summary>
+   
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -18,10 +15,7 @@ namespace ClienteApi.Infrastructure.Data
         public DbSet<Endereco> Enderecos { get; set; } = null!;
         public DbSet<Contato> Contatos { get; set; } = null!;
 
-        /// <summary>
-        /// Configuração do modelo usando Fluent API
-        /// Seguindo as melhores práticas da Microsoft
-        /// </summary>
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
