@@ -293,17 +293,21 @@ cd ClienteApi.API
 dotnet run
 ```
 
-A aplicação estará disponível em:
+A aplicação estará disponível em duas URLs:
+- **HTTPS:** https://localhost:5501
 - **HTTP:** http://localhost:5500
-- **Swagger UI:** http://localhost:5500 (abre automaticamente)
+
+Ao iniciar, o navegador abrirá automaticamente a documentação do Swagger.
 
 ---
 
 ## Documentação da API
 
-A documentação interativa da API está disponível através do Swagger UI.
+A documentação interativa da API (Swagger UI) é aberta automaticamente ao iniciar a aplicação.
 
-Acesse: **http://localhost:5500** (quando a aplicação estiver rodando)
+**URL do Swagger:** https://localhost:5501/swagger
+
+As requisições da API podem ser feitas tanto para a URL HTTPS (`https://localhost:5501`) quanto para a HTTP (`http://localhost:5500`).
 
 O Swagger permite:
 - Visualizar todos os endpoints
