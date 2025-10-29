@@ -21,4 +21,8 @@
     <ProjectReference Include="..\ClienteApi.Infrastructure\ClienteApi.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="ClienteApi.Tests.Integration" />
+  </ItemGroup>
+
 </Project>

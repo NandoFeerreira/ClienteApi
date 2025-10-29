@@ -3,17 +3,16 @@ using ClienteApi.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Adiciona as configurações de Injeção de Dependência
 builder.Services
     .AddDatabaseConfiguration(builder.Configuration)
     .AddApplicationServices(builder.Configuration)
     .AddApiConfiguration()
     .AddSwaggerConfiguration();
 
-// 2. Constrói a aplicação
+
 var app = builder.Build();
 
-// 3. Configura o pipeline de middlewares HTTP
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -40,5 +39,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-// 4. Executa a aplicação
+
 app.Run();

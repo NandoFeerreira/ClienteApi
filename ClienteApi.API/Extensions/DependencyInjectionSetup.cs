@@ -28,11 +28,10 @@ namespace ClienteApi.API.Extensions
             }
             else
             {
-                // Configuração para InMemory como Singleton para persistir dados entre requisições
-                services.AddSingleton<DbContextOptions<ApplicationDbContext>>(new DbContextOptionsBuilder<ApplicationDbContext>()
-                    .UseInMemoryDatabase("ClienteApiDb")
-                    .Options);
-                services.AddSingleton<ApplicationDbContext>();
+                // Configuração para InMemory
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseInMemoryDatabase("ClienteApiDb"),
+                    ServiceLifetime.Scoped);
             }
 
             return services;

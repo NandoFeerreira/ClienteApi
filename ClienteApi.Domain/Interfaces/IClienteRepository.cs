@@ -13,9 +13,11 @@ namespace ClienteApi.Domain.Interfaces
         Task<IEnumerable<Cliente>> SearchByNameAsync(string nome);
 
         Task<IEnumerable<Cliente>> GetByDateRangeAsync(DateTime dataInicio, DateTime dataFim);       
+
         Task<bool> ExistsByNameAsync(string nome);
 
         void RemoveEnderecos(IEnumerable<Endereco> enderecos);
+
         void RemoveContatos(IEnumerable<Contato> contatos);
     }
 }
