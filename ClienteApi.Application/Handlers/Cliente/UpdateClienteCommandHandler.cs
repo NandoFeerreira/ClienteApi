@@ -4,7 +4,6 @@ using ClienteApi.Application.Common.Constants;
 using ClienteApi.Application.Common.Utils;
 using ClienteApi.Application.DTOs.Cliente;
 using ClienteApi.Application.Services;
-using ClienteApi.Domain.Enums;
 using ClienteApi.Domain.Interfaces;
 using MediatR;
 
@@ -33,11 +32,9 @@ namespace ClienteApi.Application.Handlers.Cliente
 
             if (cliente == null)
                 throw new InvalidOperationException(string.Format(ErrorMessages.ClienteNaoEncontrado, request.Id));
-
-            // Mapeia as propriedades simples
+       
             cliente.Nome = request.Nome;
-
-            // Lógica para atualizar, adicionar e remover entidades relacionadas
+         
             await AtualizarEnderecos(cliente, request.Enderecos);
             AtualizarContatos(cliente, request.Contatos);
 
@@ -54,8 +51,7 @@ namespace ClienteApi.Application.Handlers.Cliente
                 .Where(e => !string.IsNullOrEmpty(e.Id))
                 .Select(e => IdConverter.FromBase64(e.Id!))
                 .ToList();
-
-            // Remove endereços que não vieram no payload
+   
             var enderecosParaRemover = cliente.Enderecos.Where(e => !idsRecebidos.Contains(e.Id)).ToList();
             if (enderecosParaRemover.Any())
                 _unitOfWork.Clientes.RemoveEnderecos(enderecosParaRemover);
@@ -68,7 +64,7 @@ namespace ClienteApi.Application.Handlers.Cliente
 
                 if (!string.IsNullOrEmpty(enderecoDto.Id))
                 {
-                    // Atualiza endereço existente
+                   
                     var enderecoId = IdConverter.FromBase64(enderecoDto.Id);
                     var enderecoExistente = cliente.Enderecos.FirstOrDefault(e => e.Id == enderecoId);
                     if (enderecoExistente != null)
@@ -79,8 +75,7 @@ namespace ClienteApi.Application.Handlers.Cliente
                     }
                 }
                 else
-                {
-                    // Adiciona novo endereço
+                {                  
                     var novoEndereco = _mapper.Map<Domain.Entities.Endereco>(enderecoDto);
                     novoEndereco.Logradouro = viaCepData.Logradouro;
                     novoEndereco.Cidade = viaCepData.Localidade;
@@ -95,8 +90,7 @@ namespace ClienteApi.Application.Handlers.Cliente
                 .Where(c => !string.IsNullOrEmpty(c.Id))
                 .Select(c => IdConverter.FromBase64(c.Id!))
                 .ToList();
-
-            // Remove contatos que não vieram no payload
+    
             var contatosParaRemover = cliente.Contatos.Where(c => !idsRecebidos.Contains(c.Id)).ToList();
             if (contatosParaRemover.Any())
                 _unitOfWork.Clientes.RemoveContatos(contatosParaRemover);
@@ -104,8 +98,7 @@ namespace ClienteApi.Application.Handlers.Cliente
             foreach (var contatoDto in contatosDto)
             {
                 if (!string.IsNullOrEmpty(contatoDto.Id))
-                {
-                    // Atualiza contato existente
+                {                    
                     var contatoId = IdConverter.FromBase64(contatoDto.Id);
                     var contatoExistente = cliente.Contatos.FirstOrDefault(c => c.Id == contatoId);
                     if (contatoExistente != null)
@@ -114,8 +107,7 @@ namespace ClienteApi.Application.Handlers.Cliente
                     }
                 }
                 else
-                {
-                    // Adiciona novo contato
+                {                    
                     cliente.Contatos.Add(_mapper.Map<Domain.Entities.Contato>(contatoDto));
                 }
             }

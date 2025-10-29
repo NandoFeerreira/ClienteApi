@@ -26,7 +26,7 @@ namespace ClienteApi.Application.Validators
 
             RuleFor(x => x.Contatos)
                 .NotEmpty().WithMessage("O cliente deve ter pelo menos um contato.")
-                .Must(NaoTerContatoDuplicado).WithMessage("Não é permitido cadastrar o mesmo tipo e texto de contato mais de uma vez.");
+                .Must(NaoTerContatoDuplicado).WithMessage("Não é permitido cadastrar o mesmo contato mais de uma vez.");
 
             RuleForEach(x => x.Contatos)
                 .SetValidator(new UpdateContatoDtoValidator());
@@ -39,7 +39,7 @@ namespace ClienteApi.Application.Validators
             foreach (var end in enderecos)
             {
                 if (!unicos.Add(Tuple.Create(end.Cep, end.Numero)))
-                    return false; // Encontrou um duplicado
+                    return false; 
             }
             return true;
         }
@@ -48,32 +48,35 @@ namespace ClienteApi.Application.Validators
         {
             if (contatos == null) return true;
 
-            var valoresUnicos = new HashSet<string>();
+            var textosUnicos = new HashSet<string>();
             foreach (var contato in contatos)
             {
-                var valorNormalizado = NormalizarValorContato(contato.Texto, contato.Tipo);
-                if (string.IsNullOrEmpty(valorNormalizado)) continue;
+                var textoNormalizado = NormalizarTextoContato(contato.Texto, contato.Tipo);
+                if (string.IsNullOrEmpty(textoNormalizado)) continue;
 
-                if (!valoresUnicos.Add(valorNormalizado))
-                    return false; // Encontrou um duplicado
+                if (!textosUnicos.Add(textoNormalizado))
+                    return false;
             }
             return true;
         }
 
-        private static string NormalizarValorContato(string valor, string tipo)
+        private static string NormalizarTextoContato(string texto, string tipo)
         {
-            if (string.IsNullOrWhiteSpace(valor)) return string.Empty;
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
 
             if (tipo.Equals(TipoContato.Email, StringComparison.OrdinalIgnoreCase))
             {
-                return valor.Trim().ToLower();
+                return texto.Trim().ToLower();
             }
-            if (tipo.Equals(TipoContato.Celular, StringComparison.OrdinalIgnoreCase) || tipo.Equals(TipoContato.Telefone, StringComparison.OrdinalIgnoreCase))
+      
+            if (tipo.Equals(TipoContato.Celular, StringComparison.OrdinalIgnoreCase) ||
+                tipo.Equals(TipoContato.Telefone, StringComparison.OrdinalIgnoreCase) ||
+                tipo.Equals(TipoContato.WhatsApp, StringComparison.OrdinalIgnoreCase))
             {
-                return new string(valor.Where(char.IsDigit).ToArray());
+                return new string(texto.Where(char.IsDigit).ToArray());
             }
-
-            return valor.Trim().ToLower(); // Fallback para outros tipos
+       
+            return texto.Trim().ToLower();
         }
     }
 

@@ -35,18 +35,30 @@ namespace ClienteApi.Application.Mappings
         {
             CreateMap<Endereco, EnderecoDto>();
             CreateMap<CreateEnderecoDto, Endereco>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Logradouro, opt => opt.Ignore())
+                .ForMember(dest => dest.Cidade, opt => opt.Ignore())
+                .ForMember(dest => dest.ClienteId, opt => opt.Ignore())
+                .ForMember(dest => dest.Cliente, opt => opt.Ignore());
             CreateMap<UpdateEnderecoDto, Endereco>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Id) ? 0 : IdConverter.FromBase64(src.Id)));
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Id) ? 0 : IdConverter.FromBase64(src.Id)))
+                .ForMember(dest => dest.Logradouro, opt => opt.Ignore())
+                .ForMember(dest => dest.Cidade, opt => opt.Ignore())
+                .ForMember(dest => dest.ClienteId, opt => opt.Ignore())
+                .ForMember(dest => dest.Cliente, opt => opt.Ignore());
         }
 
         private void ConfigureContatoMappings()
         {
             CreateMap<Contato, ContatoDto>();
             CreateMap<CreateContatoDto, Contato>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.ClienteId, opt => opt.Ignore())
+                .ForMember(dest => dest.Cliente, opt => opt.Ignore());
             CreateMap<UpdateContatoDto, Contato>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Id) ? 0 : IdConverter.FromBase64(src.Id)));
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Id) ? 0 : IdConverter.FromBase64(src.Id)))
+                .ForMember(dest => dest.ClienteId, opt => opt.Ignore())
+                .ForMember(dest => dest.Cliente, opt => opt.Ignore());
         }
 
         private void ConfigureCommandMappings()

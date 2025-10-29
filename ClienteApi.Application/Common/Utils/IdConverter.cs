@@ -35,10 +35,20 @@ namespace ClienteApi.Application.Common.Utils
             try
             {
                 var bytes = Convert.FromBase64String(base64);
+
+                if (bytes.Length != sizeof(int))
+                {
+                    throw new FormatException($"O ID fornecido não tem o tamanho esperado. Esperado: {sizeof(int)} bytes, Recebido: {bytes.Length} bytes.");
+                }
+
                 return BitConverter.ToInt32(bytes, 0);
             }
-            catch (FormatException ex)
-            {               
+            catch (FormatException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
                 throw new FormatException("O formato do ID fornecido é inválido.", ex);
             }
         }

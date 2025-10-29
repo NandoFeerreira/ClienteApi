@@ -1,4 +1,5 @@
 using ClienteApi.Application.Commands.Cliente;
+using ClienteApi.Application.DTOs.Cliente;
 using ClienteApi.Domain.Enums;
 using FluentValidation;
 
@@ -15,56 +16,64 @@ namespace ClienteApi.Application.Validators
 
             RuleFor(x => x.Enderecos)
                 .NotEmpty().WithMessage("O cliente deve ter pelo menos um endereço")
-                .Must(enderecos => !TemCepDuplicado(enderecos)).WithMessage("Não é permitido cadastrar o mesmo CEP mais de uma vez.");
+                .Must(enderecos => !TemCepENumeroDuplicado(enderecos)).WithMessage("Não é permitido cadastrar o mesmo CEP e número mais de uma vez.");
 
             RuleForEach(x => x.Enderecos)
                 .SetValidator(new CreateEnderecoDtoValidator());
 
             RuleFor(x => x.Contatos)
                 .NotEmpty().WithMessage("O cliente deve ter pelo menos um contato")
-                .Must(contatos => !TemContatoDuplicado(contatos)).WithMessage("Não é permitido cadastrar o mesmo tipo e texto de contato mais de uma vez.");
+                .Must(contatos => !TemContatoDuplicado(contatos)).WithMessage("Não é permitido cadastrar o mesmo contato mais de uma vez.");
 
             RuleForEach(x => x.Contatos)
                 .SetValidator(new CreateContatoDtoValidator());
         }
 
-        private static bool TemCepDuplicado(IEnumerable<DTOs.Cliente.CreateEnderecoDto> enderecos)
+        private static bool TemCepENumeroDuplicado(IEnumerable<CreateEnderecoDto> enderecos)
         {
             if (enderecos == null) return false;
-            var ceps = enderecos.Select(e => e.Cep);
-            return ceps.GroupBy(c => c).Any(g => g.Count() > 1);
-        }
-
-        private static bool TemContatoDuplicado(IEnumerable<DTOs.Cliente.CreateContatoDto> contatos)
-        {
-            if (contatos == null) return false;
-
-            var valoresUnicos = new HashSet<string>();
-            foreach (var contato in contatos)
+            var unicos = new HashSet<(string Cep, string Numero)>();
+            foreach (var endereco in enderecos)
             {
-                var valorNormalizado = NormalizarValorContato(contato.Texto, contato.Tipo);
-                if (string.IsNullOrEmpty(valorNormalizado)) continue;
-
-                if (!valoresUnicos.Add(valorNormalizado))
-                    return true; // Encontrou um duplicado
+                if (!unicos.Add((endereco.Cep, endereco.Numero)))
+                    return true; 
             }
             return false;
         }
 
-        private static string NormalizarValorContato(string valor, string tipo)
+        private static bool TemContatoDuplicado(IEnumerable<CreateContatoDto> contatos)
         {
-            if (string.IsNullOrWhiteSpace(valor)) return string.Empty;
+            if (contatos == null) return false;
+
+            var textosUnicos = new HashSet<string>();
+            foreach (var contato in contatos)
+            {
+                var textoNormalizado = NormalizarTextoContato(contato.Texto, contato.Tipo);
+                if (string.IsNullOrEmpty(textoNormalizado)) continue;
+
+                if (!textosUnicos.Add(textoNormalizado))
+                    return true; 
+            }
+            return false;
+        }
+
+        private static string NormalizarTextoContato(string texto, string tipo)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
 
             if (tipo.Equals(TipoContato.Email, StringComparison.OrdinalIgnoreCase))
             {
-                return valor.Trim().ToLower();
+                return texto.Trim().ToLower();
             }
-            if (tipo.Equals(TipoContato.Celular, StringComparison.OrdinalIgnoreCase) || tipo.Equals(TipoContato.Telefone, StringComparison.OrdinalIgnoreCase))
+           
+            if (tipo.Equals(TipoContato.Celular, StringComparison.OrdinalIgnoreCase) ||
+                tipo.Equals(TipoContato.Telefone, StringComparison.OrdinalIgnoreCase) ||
+                tipo.Equals(TipoContato.WhatsApp, StringComparison.OrdinalIgnoreCase))
             {
-                return new string(valor.Where(char.IsDigit).ToArray());
+                return new string(texto.Where(char.IsDigit).ToArray());
             }
-
-            return valor.Trim().ToLower(); // Fallback para outros tipos
+         
+            return texto.Trim().ToLower();
         }
     }
 
