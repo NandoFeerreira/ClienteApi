@@ -33,7 +33,7 @@ namespace ClienteApi.Infrastructure.Repositories
         public async Task<IEnumerable<Cliente>> SearchByNameAsync(string nome)
         {
             if (string.IsNullOrWhiteSpace(nome))
-                return Enumerable.Empty<Cliente>();
+                return [];
 
             var lowerCaseNome = nome.ToLower();
 
@@ -44,27 +44,6 @@ namespace ClienteApi.Infrastructure.Repositories
                 .Where(c => c.Nome.ToLower().Contains(lowerCaseNome))
                 .OrderBy(c => c.Nome)
                 .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Cliente>> GetByDateRangeAsync(DateTime dataInicio, DateTime dataFim)
-        {
-            return await _dbSet
-                .AsNoTracking()
-                .Include(c => c.Enderecos)
-                .Include(c => c.Contatos)
-                .Where(c => c.DataCadastro >= dataInicio && c.DataCadastro <= dataFim)
-                .OrderBy(c => c.DataCadastro)
-                .ToListAsync();
-        }
-
-        public async Task<bool> ExistsByNameAsync(string nome)
-        {
-            if (string.IsNullOrWhiteSpace(nome))
-                return false;
-
-            return await _dbSet
-                .AsNoTracking()
-                .AnyAsync(c => EF.Functions.ILike(c.Nome, nome));
         }
 
         public void RemoveEnderecos(IEnumerable<Endereco> enderecos)

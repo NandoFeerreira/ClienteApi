@@ -4,13 +4,11 @@ namespace ClienteApi.API.Responses
     {
         public string Message { get; set; }
         public int StatusCode { get; set; }
-        public string? Details { get; set; }
 
-        public ErrorResponse(string message, int statusCode, string? details = null)
+        public ErrorResponse(string message, int statusCode)
         {
             Message = message;
             StatusCode = statusCode;
-            Details = details;
         }
     }
 }
