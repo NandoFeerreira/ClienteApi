@@ -58,7 +58,6 @@ namespace ClienteApi.Tests.Unit.Handlers.Cliente
                 Uf = "TS"
             };
 
-            _clienteRepositoryMock.Setup(repo => repo.ExistsByNameAsync(command.Nome)).ReturnsAsync(false);
             _viaCepServiceMock.Setup(s => s.GetAddressByCepAsync(It.IsAny<string>())).ReturnsAsync(viaCepResponse);          
             _clienteRepositoryMock.Setup(repo => repo.GetByIdWithRelationsAsync(It.IsAny<int>()))
                 .ReturnsAsync((int id) => _mapper.Map<Domain.Entities.Cliente>(command));
@@ -87,7 +86,6 @@ namespace ClienteApi.Tests.Unit.Handlers.Cliente
                 Enderecos = new List<CreateEnderecoDto> { new CreateEnderecoDto { Cep = "99999-999" } }
             };
 
-            _clienteRepositoryMock.Setup(repo => repo.ExistsByNameAsync(command.Nome)).ReturnsAsync(false);
             _viaCepServiceMock.Setup(s => s.GetAddressByCepAsync(It.IsAny<string>())).ReturnsAsync((ViaCepResponse?)null);
 
             var handler = new CreateClienteCommandHandler(_unitOfWorkMock.Object, _mapper, _viaCepServiceMock.Object);
